@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,61 @@ namespace logviewer
             dgv.AllowDrop = true;
             dgv.DragEnter += Dgv_DragEnter;
             dgv.DragDrop += Dgv_DragDrop;
+            dgv.RowHeaderMouseClick += Dgv_RowHeaderMouseClick;
+            this.KeyDown += Form1_KeyDown;
+            this.KeyPreview = true;
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && !e.Shift && !e.Alt && e.KeyCode == Keys.O)
+            {
+                using (var ofd = new OpenFileDialog())
+                {
+                    DialogResult result = ofd.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        SetFile(ofd.FileName);
+                    }
+                }
+            }
+        }
+
+        private void Dgv_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (this.file_ == null)
+            {
+                return;
+            }
+            string notepad2 =
+                new[] {
+                    @"%USER_BACK%\btsync\util\Notepad2\Notepad2.exe",
+                    @"C:\Program Files\Notepad2\Notepad2.exe",
+                    @"C:\Program Files (x86)\Notepad2\Notepad2.exe"
+
+                }
+                .Select(Environment.ExpandEnvironmentVariables)
+                .FirstOrDefault(File.Exists);
+
+            int line = Convert.ToInt32(dgv.Rows[e.RowIndex].Cells[0].Value);
+
+            if (notepad2 != null)
+            {
+                Process.Start(notepad2, $"/g {line} \"{this.file_}\"");
+                return;
+            }
+
+            string notepadPP =
+                new[] {
+                @"C:\Program Files\Notepad++\notepad++.exe",
+                @"C:\Program Files (x86)\Notepad++\notepad++.exe"
+                }.FirstOrDefault(File.Exists);
+
+            if (notepadPP != null)
+            {
+                Process.Start(notepadPP, $"-n{line} \"{this.file_}\"");
+                return;
+            }
         }
 
         private void Dgv_DragEnter(object sender, DragEventArgs e)
@@ -33,7 +89,13 @@ namespace logviewer
 
         private void Dgv_DragDrop(object sender, DragEventArgs e)
         {
-            this.file_ = ((string[])e.Data.GetData(DataFormats.FileDrop)).First();
+            string file = ((string[])e.Data.GetData(DataFormats.FileDrop)).First();
+            SetFile(file);
+        }
+
+        private void SetFile(string file)
+        {
+            this.file_ = file;
             this.Text = this.file_;
             if (this.rules_ == null)
             {
@@ -82,6 +144,7 @@ namespace logviewer
             }
 
             IEnumerable<string> text = File.ReadLines(file);
+            var rowRules = rules?.RowRules ?? new RowRule[0];
 
             var newColumns = rules.ColumnRules.GroupBy(x => x.ColumnName);
 
@@ -99,6 +162,30 @@ namespace logviewer
             foreach (var row in text)
             {
                 rowIndex += 1;
+                bool rowOk = true;
+                foreach (var rowRule in rowRules)
+                {
+                    if ((rowRule.IncludeRegex ?? "").Length != 0)
+                    {
+                        if (!Regex.IsMatch(row, rowRule.IncludeRegex))
+                        {
+                            rowOk = false;
+                            break;
+                        }
+                    }
+                    if ((rowRule.ExcludeRegex ?? "").Length != 0)
+                    {
+                        if (Regex.IsMatch(row, rowRule.ExcludeRegex))
+                        {
+                            rowOk = false;
+                            break;
+                        }
+                    }
+                }
+                if (!rowOk)
+                {
+                    continue;
+                }
                 var dgvRow = dgv.Rows[dgv.Rows.Add()];
                 dgvRow.Cells[0].Value = rowIndex;
                 bool anyMatches = false;
@@ -116,7 +203,7 @@ namespace logviewer
                         string field = row;
                         if (!string.IsNullOrEmpty(rule.FieldDelimiter))
                         {
-                            string fieldIndex = rule.FieldIndex+ "";
+                            string fieldIndex = rule.FieldIndex + "";
                             if (fieldIndex.Length == 0)
                             {
                                 fieldIndex = "0";
