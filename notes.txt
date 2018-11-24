@@ -1,0 +1,9 @@
+TODO:
+- virtualization
+- change watching
+- jsonpath
+- programmable transformations
+    - get third csv field
+    - then follow this jsonpath
+- programmable filters
+- show unique values in column

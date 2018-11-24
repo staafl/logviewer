@@ -1,0 +1,46 @@
+{
+  "ColumnRules": [
+    {
+      "ColumnName": "domain",
+      "Regex": "\"domain\": *\"global\"",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "\"domain\": *\"global\"",
+      "Color": ""
+    },
+    {
+      "ColumnName": "(incoming|outgoing)",
+      "Regex": "(incoming|outgoing)",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "(incoming|outgoing)",
+      "Color": ""
+    },
+    {
+      "ColumnName": "(?<!.*type.*)\"type\": *\"([^\"]+)\"",
+      "Regex": "(?<!.*type.*)\"type\": *\"([^\"]+)\"",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "(?<!.*type.*)\"type\": *\"([^\"]+)\"",
+      "Color": ""
+    }
+  ],
+  "RowRules": [
+    {
+      "RuleName": "q",
+      "IncludeRegex": "\"domain\": *\"global\"",
+      "ExcludeRegex": ""
+    },
+    {
+      "RuleName": "w",
+      "IncludeRegex": ":domain \"global\"",
+      "ExcludeRegex": ""
+    }
+  ]
+}

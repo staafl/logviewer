@@ -1,0 +1,15 @@
+{
+  "ColumnRules": [
+    {
+      "ColumnName": "Type",
+      "Regex": "(?<!.*type.*)\"type\": *\"(subscribe-context|update-context|create-context)\"",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "^[^{]+:type +([^ ]+)",
+      "Color": ""
+    }
+  ],
+  "RowRules": []
+}

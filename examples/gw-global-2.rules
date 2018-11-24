@@ -1,0 +1,46 @@
+{
+  "ColumnRules": [
+    {
+      "ColumnName": "(incoming|outgoing)",
+      "Regex": "(incoming|outgoing)",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "(incoming|outgoing)",
+      "Color": ""
+    },
+    {
+      "ColumnName": "type",
+      "Regex": "(?<!.*type.*)\"type\": *\"([^\"]+)\"",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "(?<!.*type.*)\"type\": *\"([^\"]+)\"",
+      "Color": ""
+    },
+    {
+      "ColumnName": "type",
+      "Regex": "(?<!.*type.*):type *:([^ ,]+)",
+      "GroupsJoin": null,
+      "MatchesJoin": null,
+      "FieldIndex": "",
+      "FieldDelimiter": "",
+      "RuleName": "(?<!.*type.*)\"type\": *\"([^\"]+)\"\n(?<!.*type.*):type *\"([^\"]+)\"",
+      "Color": ""
+    }
+  ],
+  "RowRules": [
+    {
+      "RuleName": "q",
+      "IncludeRegex": "global.*(incoming|outgoing)",
+      "ExcludeRegex": ""
+    },
+    {
+      "RuleName": "w",
+      "IncludeRegex": "(incoming|outgoing).*global",
+      "ExcludeRegex": ""
+    }
+  ]
+}

@@ -163,14 +163,16 @@ namespace logviewer
             {
                 rowIndex += 1;
                 bool rowOk = true;
+                bool anyInclude = false;
+                bool matchesAnyInclude = false;
                 foreach (var rowRule in rowRules)
                 {
                     if ((rowRule.IncludeRegex ?? "").Length != 0)
                     {
-                        if (!Regex.IsMatch(row, rowRule.IncludeRegex))
+                        anyInclude = true;
+                        if (Regex.IsMatch(row, rowRule.IncludeRegex))
                         {
-                            rowOk = false;
-                            break;
+                            matchesAnyInclude = true;
                         }
                     }
                     if ((rowRule.ExcludeRegex ?? "").Length != 0)
@@ -181,6 +183,10 @@ namespace logviewer
                             break;
                         }
                     }
+                }
+                if (anyInclude && !matchesAnyInclude)
+                {
+                    continue;
                 }
                 if (!rowOk)
                 {
