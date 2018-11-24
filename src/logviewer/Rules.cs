@@ -14,17 +14,20 @@ namespace logviewer
 
     public class ColumnRule
     {
-        public string ColumnName { get; internal set; }
-        public string Regex { get; internal set; }
-        public string GroupsJoin { get; internal set; }
+        public string ColumnName { get; set; }
+        public string Regex { get; set; }
+        public string GroupsJoin { get; set; }
         public string MatchesJoin { get; set; }
         public string FieldIndex { get; set; }
         public string FieldDelimiter { get; set; }
-        public string RuleName { get; internal set; }
-        public string Color { get; internal set; }
+        public string RuleName { get; set; }
+        public string Color { get; set; }
     }
 
     public class RowRule
     {
+        public string RuleName { get; set; }
+        public string IncludeRegex { get; set; }
+        public string ExcludeRegex { get; set; }
     }
 }
