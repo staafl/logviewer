@@ -108,15 +108,31 @@ namespace logviewer
                     columnIndex += 1;
                     foreach (var rule in newColumn)
                     {
+                        string regex = rule.Regex;
                         if (string.IsNullOrEmpty(rule.Regex))
                         {
-                            continue;
+                            regex = ".*";
                         }
-                        foreach (var match in Regex.Matches(row, rule.Regex).OfType<Match>())
+                        string field = row;
+                        if (!string.IsNullOrEmpty(rule.FieldDelimiter))
+                        {
+                            string fieldIndex = rule.FieldIndex+ "";
+                            if (fieldIndex.Length == 0)
+                            {
+                                fieldIndex = "0";
+                            }
+                            field = row.Split(new[] { rule.FieldDelimiter }, StringSplitOptions.None).Skip(Convert.ToInt32(fieldIndex)).FirstOrDefault();
+                        }
+
+                        foreach (var match in Regex.Matches(field, rule.Regex).OfType<Match>())
                         {
                             anyMatches = true;
+                            if (!string.IsNullOrWhiteSpace(dgvRow.Cells[columnIndex].Value + ""))
+                            {
+                                dgvRow.Cells[columnIndex].Value += rule.MatchesJoin ?? " ";
+                            }
                             dgvRow.Cells[columnIndex].Value += match.Groups.Count > 1 ?
-                                string.Join(rule.RegexJoin ?? " ", match.Groups.OfType<Group>().Skip(1)) :
+                                string.Join(rule.GroupsJoin ?? " ", match.Groups.OfType<Group>().Skip(1)) :
                                 match.Value;
                         }
                     }

@@ -16,8 +16,12 @@ namespace logviewer
     {
         public string ColumnName { get; internal set; }
         public string Regex { get; internal set; }
-        public string RegexJoin { get; internal set; }
+        public string GroupsJoin { get; internal set; }
+        public string MatchesJoin { get; set; }
+        public string FieldIndex { get; set; }
+        public string FieldDelimiter { get; set; }
         public string RuleName { get; internal set; }
+        public string Color { get; internal set; }
     }
 
     public class RowRule
