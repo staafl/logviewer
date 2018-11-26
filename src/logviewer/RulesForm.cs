@@ -52,8 +52,19 @@ namespace logviewer
             InitializeComponent();
 
             SetRules(rules);
+            dgvColumnRules.AllowDrop = true;
             dgvColumnRules.DragEnter += Dgv_DragEnter;
             dgvColumnRules.DragDrop += Dgv_DragDrop;
+            this.KeyDown += RulesForm_KeyDown;
+            this.KeyPreview = true;
+        }
+
+        private void RulesForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && !e.Shift && !e.Alt && e.KeyCode == Keys.O)
+            {
+                AskForFile();
+            }
         }
 
         private void Dgv_DragEnter(object sender, DragEventArgs e)
@@ -65,6 +76,53 @@ namespace logviewer
         {
             string file = ((string[])e.Data.GetData(DataFormats.FileDrop)).First();
             ImportRules(file);
+        }
+
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            this.Rules = GetRules();
+            this.DialogResult = DialogResult.OK;
+        }
+
+        private void buttonImport_Click(object sender, EventArgs e)
+        {
+            AskForFile();
+        }
+
+        private void buttonExport_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new SaveFileDialog())
+            {
+                DialogResult result = ofd.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    string file = ofd.FileName;
+                    try
+                    {
+                        var rules = Newtonsoft.Json.JsonConvert.SerializeObject(GetRules(),
+                            Newtonsoft.Json.Formatting.Indented);
+                        File.WriteAllText(file, rules);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex + "");
+                    }
+                }
+            }
+        }
+
+
+        private void AskForFile()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                DialogResult result = ofd.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    string file = ofd.FileName;
+                    ImportRules(file);
+                }
+            }
         }
 
         private void SetRules(Rules rules)
@@ -130,12 +188,6 @@ namespace logviewer
             return rules.ToArray();
         }
 
-        private void buttonOK_Click(object sender, EventArgs e)
-        {
-            this.Rules = GetRules();
-            this.DialogResult = DialogResult.OK;
-        }
-
         private Rules GetRules()
         {
             var columnRuleNames = new HashSet<string>();
@@ -199,19 +251,6 @@ namespace logviewer
             };
         }
 
-        private void buttonImport_Click(object sender, EventArgs e)
-        {
-            using (var ofd = new OpenFileDialog())
-            {
-                DialogResult result = ofd.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    string file = ofd.FileName;
-                    ImportRules(file);
-                }
-            }
-        }
-
         private void ImportRules(string file)
         {
             try
@@ -230,28 +269,6 @@ namespace logviewer
             catch (Exception ex)
             {
                 MessageBox.Show(ex + "");
-            }
-        }
-
-        private void buttonExport_Click(object sender, EventArgs e)
-        {
-            using (var ofd = new SaveFileDialog())
-            {
-                DialogResult result = ofd.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    string file = ofd.FileName;
-                    try
-                    {
-                        var rules = Newtonsoft.Json.JsonConvert.SerializeObject(GetRules(),
-                            Newtonsoft.Json.Formatting.Indented);
-                        File.WriteAllText(file, rules);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex + "");
-                    }
-                }
             }
         }
     }

@@ -7,3 +7,4 @@ TODO:
     - then follow this jsonpath
 - programmable filters
 - show unique values in column
+- option to drag either rules or file in main window

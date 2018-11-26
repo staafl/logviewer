@@ -64,7 +64,7 @@
             this.buttonOpen.Name = "buttonOpen";
             this.buttonOpen.Size = new System.Drawing.Size(75, 29);
             this.buttonOpen.TabIndex = 1;
-            this.buttonOpen.Text = "Open";
+            this.buttonOpen.Text = "&Open";
             this.buttonOpen.UseVisualStyleBackColor = true;
             this.buttonOpen.Click += new System.EventHandler(this.buttonOpen_Click);
             // 
@@ -85,7 +85,7 @@
             this.buttonRules.Name = "buttonRules";
             this.buttonRules.Size = new System.Drawing.Size(75, 29);
             this.buttonRules.TabIndex = 2;
-            this.buttonRules.Text = "Rules";
+            this.buttonRules.Text = "&Rules";
             this.buttonRules.UseVisualStyleBackColor = true;
             this.buttonRules.Click += new System.EventHandler(this.buttonRules_Click);
             // 

@@ -34,14 +34,7 @@ namespace logviewer
         {
             if (e.Control && !e.Shift && !e.Alt && e.KeyCode == Keys.O)
             {
-                using (var ofd = new OpenFileDialog())
-                {
-                    DialogResult result = ofd.ShowDialog();
-                    if (result == DialogResult.OK)
-                    {
-                        SetFile(ofd.FileName);
-                    }
-                }
+                AskForFile();
             }
         }
 
@@ -93,7 +86,26 @@ namespace logviewer
             SetFile(file);
         }
 
+        private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == -1 && e.RowIndex == -1)
+            {
+                ShowRulesForm();
+            }
+        }
+
         private void buttonOpen_Click(object sender, EventArgs e)
+        {
+            AskForFile();
+        }
+
+        private void buttonRules_Click(object sender, EventArgs e)
+        {
+            ShowRulesForm();
+        }
+
+
+        private void AskForFile()
         {
             using (var ofd = new OpenFileDialog())
             {
@@ -105,8 +117,6 @@ namespace logviewer
             }
         }
 
-
-
         private void SetFile(string file)
         {
             this.file_ = file;
@@ -115,13 +125,9 @@ namespace logviewer
             {
                 ShowRulesForm();
             }
-        }
-
-        private void Dgv_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == -1 && e.RowIndex == -1)
+            else
             {
-                ShowRulesForm();
+                LoadData();
             }
         }
 
@@ -129,7 +135,7 @@ namespace logviewer
         {
             using (var rulesForm = new RulesForm(this.rules_))
             {
-                rulesForm.ShowDialog();
+                rulesForm.ShowDialog(this);
                 this.LoadData(rules: rulesForm.Rules);
             }
         }
@@ -249,11 +255,8 @@ namespace logviewer
                     dgv.Rows.Remove(dgvRow);
                 }
             }
-        }
 
-        private void buttonRules_Click(object sender, EventArgs e)
-        {
-            ShowRulesForm();
+            dgv.AutoResizeColumns();
         }
     }
 }
