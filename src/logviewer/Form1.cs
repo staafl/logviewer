@@ -26,8 +26,14 @@ namespace logviewer
             dgv.DragEnter += Dgv_DragEnter;
             dgv.DragDrop += Dgv_DragDrop;
             dgv.RowHeaderMouseClick += Dgv_RowHeaderMouseClick;
+            dgv.CellDoubleClick += Dgv_CellDoubleClick;
             this.KeyDown += Form1_KeyDown;
             this.KeyPreview = true;
+        }
+
+        private void Dgv_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            JumpToRow(e.RowIndex);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -40,40 +46,9 @@ namespace logviewer
 
         private void Dgv_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (this.file_ == null)
-            {
-                return;
-            }
-            string notepad2 =
-                new[] {
-                    @"%USER_BACK%\btsync\util\Notepad2\Notepad2.exe",
-                    @"C:\Program Files\Notepad2\Notepad2.exe",
-                    @"C:\Program Files (x86)\Notepad2\Notepad2.exe"
-
-                }
-                .Select(Environment.ExpandEnvironmentVariables)
-                .FirstOrDefault(File.Exists);
-
-            int line = Convert.ToInt32(dgv.Rows[e.RowIndex].Cells[0].Value);
-
-            if (notepad2 != null)
-            {
-                Process.Start(notepad2, $"/g {line} \"{this.file_}\"");
-                return;
-            }
-
-            string notepadPP =
-                new[] {
-                @"C:\Program Files\Notepad++\notepad++.exe",
-                @"C:\Program Files (x86)\Notepad++\notepad++.exe"
-                }.FirstOrDefault(File.Exists);
-
-            if (notepadPP != null)
-            {
-                Process.Start(notepadPP, $"-n{line} \"{this.file_}\"");
-                return;
-            }
+            JumpToRow(e.RowIndex);
         }
+
 
         private void Dgv_DragEnter(object sender, DragEventArgs e)
         {
@@ -82,6 +57,7 @@ namespace logviewer
 
         private void Dgv_DragDrop(object sender, DragEventArgs e)
         {
+            e.Effect = DragDropEffects.None;
             string file = ((string[])e.Data.GetData(DataFormats.FileDrop)).First();
             SetFile(file);
         }
@@ -104,6 +80,43 @@ namespace logviewer
             ShowRulesForm();
         }
 
+
+        private void JumpToRow(int rowIndex)
+        {
+            if (this.file_ == null)
+            {
+                return;
+            }
+            string notepad2 =
+                new[] {
+                    @"%USER_BACK%\btsync\util\Notepad2\Notepad2.exe",
+                    @"C:\Program Files\Notepad2\Notepad2.exe",
+                    @"C:\Program Files (x86)\Notepad2\Notepad2.exe"
+
+                }
+                .Select(Environment.ExpandEnvironmentVariables)
+                .FirstOrDefault(File.Exists);
+
+            int line = Convert.ToInt32(dgv.Rows[rowIndex].Cells[0].Value);
+
+            if (notepad2 != null)
+            {
+                Process.Start(notepad2, $"/g {line} \"{this.file_}\"");
+                return;
+            }
+
+            string notepadPP =
+                new[] {
+                @"C:\Program Files\Notepad++\notepad++.exe",
+                @"C:\Program Files (x86)\Notepad++\notepad++.exe"
+                }.FirstOrDefault(File.Exists);
+
+            if (notepadPP != null)
+            {
+                Process.Start(notepadPP, $"-n{line} \"{this.file_}\"");
+                return;
+            }
+        }
 
         private void AskForFile()
         {

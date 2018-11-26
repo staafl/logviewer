@@ -74,6 +74,7 @@ namespace logviewer
 
         private void Dgv_DragDrop(object sender, DragEventArgs e)
         {
+            e.Effect = DragDropEffects.None;
             string file = ((string[])e.Data.GetData(DataFormats.FileDrop)).First();
             ImportRules(file);
         }
