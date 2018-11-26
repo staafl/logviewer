@@ -93,6 +93,20 @@ namespace logviewer
             SetFile(file);
         }
 
+        private void buttonOpen_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                DialogResult result = ofd.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    this.SetFile(ofd.FileName);
+                }
+            }
+        }
+
+
+
         private void SetFile(string file)
         {
             this.file_ = file;
@@ -235,6 +249,11 @@ namespace logviewer
                     dgv.Rows.Remove(dgvRow);
                 }
             }
+        }
+
+        private void buttonRules_Click(object sender, EventArgs e)
+        {
+            ShowRulesForm();
         }
     }
 }

@@ -33,12 +33,12 @@ namespace logviewer
         };
 
         static Dictionary<
-        Expression<Func<RowRule, string>>,
-        Func<RulesForm, DataGridViewColumn>>
-            rowRuleToColumn =
-                new Dictionary<
-                    Expression<Func<RowRule, string>>,
-                    Func<RulesForm, DataGridViewColumn>>
+            Expression<Func<RowRule, string>>,
+            Func<RulesForm, DataGridViewColumn>>
+                rowRuleToColumn =
+                    new Dictionary<
+                        Expression<Func<RowRule, string>>,
+                        Func<RulesForm, DataGridViewColumn>>
         {
             {rr => rr.RuleName, rf => rf.rowRulesColumnRuleName },
             {rr => rr.IncludeRegex, rf => rf.rowRulesColumnIncludeRegex },
@@ -52,6 +52,19 @@ namespace logviewer
             InitializeComponent();
 
             SetRules(rules);
+            dgvColumnRules.DragEnter += Dgv_DragEnter;
+            dgvColumnRules.DragDrop += Dgv_DragDrop;
+        }
+
+        private void Dgv_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void Dgv_DragDrop(object sender, DragEventArgs e)
+        {
+            string file = ((string[])e.Data.GetData(DataFormats.FileDrop)).First();
+            ImportRules(file);
         }
 
         private void SetRules(Rules rules)
@@ -65,11 +78,6 @@ namespace logviewer
                 rowRuleToColumn,
                 dgvRowRules,
                 rules?.RowRules);
-        }
-
-        private void dgvColumnRules_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         void SetRules<TRule>(
@@ -199,24 +207,29 @@ namespace logviewer
                 if (result == DialogResult.OK)
                 {
                     string file = ofd.FileName;
-                    try
-                    {
-                        var rules = Newtonsoft.Json.JsonConvert.DeserializeObject<Rules>(
-                            File.ReadAllText(file),
-                            new Newtonsoft.Json.JsonSerializerSettings
-                            {
-                                ContractResolver = new DefaultContractResolver
-                                {
-                                    NamingStrategy = new CamelCaseNamingStrategy()
-                                }
-                            });
-                        this.SetRules(rules);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex + "");
-                    }
+                    ImportRules(file);
                 }
+            }
+        }
+
+        private void ImportRules(string file)
+        {
+            try
+            {
+                var rules = Newtonsoft.Json.JsonConvert.DeserializeObject<Rules>(
+                    File.ReadAllText(file),
+                    new Newtonsoft.Json.JsonSerializerSettings
+                    {
+                        ContractResolver = new DefaultContractResolver
+                        {
+                            NamingStrategy = new CamelCaseNamingStrategy()
+                        }
+                    });
+                this.SetRules(rules);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex + "");
             }
         }
 

@@ -93,7 +93,6 @@
             this.dgvColumnRules.RowTemplate.Height = 24;
             this.dgvColumnRules.Size = new System.Drawing.Size(836, 496);
             this.dgvColumnRules.TabIndex = 0;
-            this.dgvColumnRules.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvColumnRules_CellContentClick);
             // 
             // columnRuleName
             // 
